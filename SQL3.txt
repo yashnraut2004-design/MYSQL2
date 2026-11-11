@@ -1,0 +1,704 @@
+mysql> use working;
+Database changed
+mysql> CREATE TABLE departments (    department_id INT PRIMARY KEY,    department_name VARCHAR(100) NOT NULL,    floor_no INT NOT NULL );
+Query OK, 0 rows affected (0.12 sec)
+
+mysql> CREATE TABLE doctors (    doctor_id INT PRIMARY KEY,    doctor_name VARCHAR(100) NOT NULL,    specialization VARCHAR(100) NOT NULL,    consultation_fee DECIMAL(10,2) NOT NULL,    department_id INT NOT NULL,    status VARCHAR(20) NOT NULL,    FOREIGN KEY (department_id)        REFERENCES departments(department_id) );
+Query OK, 0 rows affected (0.10 sec)
+
+mysql> CREATE TABLE patients (    patient_id INT PRIMARY KEY,    patient_name VARCHAR(100) NOT NULL,    city VARCHAR(50) NOT NULL,    age INT NOT NULL,    gender VARCHAR(20) NOT NULL,    registration_date DATE NOT NULL );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> CREATE TABLE appointments (    appointment_id INT PRIMARY KEY,    patient_id INT NOT NULL,    doctor_id INT NOT NULL,    appointment_date DATE NOT NULL,    appointment_time TIME NOT NULL,    consultation_type VARCHAR(20) NOT NULL,    status VARCHAR(20) NOT NULL,    FOREIGN KEY (patient_id)        REFERENCES patients(patient_id),    FOREIGN KEY (doctor_id)        REFERENCES doctors(doctor_id) );
+Query OK, 0 rows affected (0.11 sec)
+
+mysql> CREATE TABLE bills (    bill_id INT PRIMARY KEY,    appointment_id INT NOT NULL,    bill_date DATE NOT NULL,    consultation_charge DECIMAL(10,2) NOT NULL,    test_charge DECIMAL(10,2) NOT NULL,    medicine_charge DECIMAL(10,2) NOT NULL,    total_amount DECIMAL(10,2) NOT NULL,    payment_status VARCHAR(20) NOT NULL,    FOREIGN KEY (appointment_id)        REFERENCES appointments(appointment_id) );
+Query OK, 0 rows affected (0.10 sec)
+
+mysql> CREATE TABLE payments (    payment_id INT PRIMARY KEY,    bill_id INT NOT NULL,    payment_date DATE NOT NULL,    amount_paid DECIMAL(10,2) NOT NULL,    payment_mode VARCHAR(30) NOT NULL,    FOREIGN KEY (bill_id)        REFERENCES bills(bill_id) );
+Query OK, 0 rows affected (0.10 sec)
+
+mysql> INSERT INTO departments (department_id, department_name, floor_no) VALUES (1, 'Cardiology', 2), (2, 'Dermatology', 3), (3, 'Orthopedic', 4), (4, 'General Medicine', 1);
+Query OK, 4 rows affected (0.05 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO doctors (doctor_id, doctor_name, specialization, consultation_fee, department_id, status) VALUES (101, 'Dr. Mehta', 'Cardiology', 1200, 1, 'Active'), (102, 'Dr. Sharma', 'Dermatology', 900, 2, 'Active'), (103, 'Dr. Patil', 'Orthopedic', 1000, 3, 'Active'), (104, 'Dr. Kulkarni', 'General Medicine', 700, 4, 'Active'), (105, 'Dr. Shah', 'Cardiology', 1500, 1, 'Active'), (106, 'Dr. More', 'Orthopedic', 1100, 3, 'Inactive');
+Query OK, 6 rows affected (0.05 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO patients (patient_id, patient_name, city, age, gender, registration_date) VALUES (201, 'Rahul Patil', 'Pune', 28, 'Male', '2026-01-10'), (202, 'Priya Sharma', 'Mumbai', 34, 'Female', '2026-02-15'), (203, 'Amit Joshi', 'Pune', 42, 'Male', '2025-12-20'), (204, 'Sneha Kulkarni', 'Nashik', 30, 'Female', '2026-03-05'), (205, 'Raj Mehta', 'Nagpur', 25, 'Male', '2026-04-01'), (206, 'Anjali More', 'Pune', 38, 'Female', '2026-05-12'), (207, 'Rohan Deshmukh', 'Mumbai', 45, 'Male', '2026-06-18'), (208, 'Neha Shah', 'Nashik', 29, 'Female', '2025-11-22');
+Query OK, 8 rows affected (0.05 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO appointments (appointment_id, patient_id, doctor_id, appointment_date, appointment_time, consultation_type, status) VALUES (301, 201, 101, '2026-08-20', '10:30:00', 'Offline', 'Completed'), (302, 202, 102, '2026-08-22', '11:00:00', 'Online', 'Completed'), (303, 203, 103, '2025-07-10', '12:15:00', 'Offline', 'Cancelled'), (304, 204, 101, '2026-09-02', '09:45:00', 'Offline', 'Booked'), (305, 205, 104, '2026-09-03', '15:00:00', 'Online', 'Pending'), (306, 206, 105, '2026-08-25', '16:30:00', 'Offline', 'Completed'), (307, 207, 103, '2026-08-28', '14:00:00', 'Offline', 'Completed'), (308, 208, 102, '2026-09-04', '13:30:00', 'Online', 'Pending'), (309, 201, 105, '2026-09-05', '10:00:00', 'Offline', 'Booked'), (310, 204, 104, '2026-08-30', '11:45:00', 'Offline', 'Completed');
+Query OK, 10 rows affected (0.05 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO bills (bill_id, appointment_id, bill_date, consultation_charge, test_charge, medicine_charge, total_amount, payment_status) VALUES (401, 301, '2026-08-20', 1200, 3000, 1500, 5700, 'Paid'), (402, 302, '2026-08-22', 900, 1000, 800, 2700, 'Paid'), (403, 306, '2026-08-25', 1500, 4500, 2200, 8200, 'Partial'), (404, 307, '2026-08-28', 1000, 2500, 1200, 4700, 'Paid'), (405, 310, '2026-08-30', 700, 1200, 900, 2800, 'Pending'), (406, 304, '2026-09-02', 1200, 0, 0, 1200, 'Pending');
+Query OK, 6 rows affected (0.05 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO payments (payment_id, bill_id, payment_date, amount_paid, payment_mode) VALUES (501, 401, '2026-08-20', 5700, 'UPI'), (502, 402, '2026-08-22', 2700, 'Card'), (503, 403, '2026-08-25', 4000, 'UPI'), (504, 404, '2026-08-28', 4700, 'Cash'), (505, 403, '2026-08-27', 2000, 'Card');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0 
+
+mysql> desc departments;
++-----------------+--------------+------+-----+---------+-------+
+| Field           | Type         | Null | Key | Default | Extra |
++-----------------+--------------+------+-----+---------+-------+
+| department_id   | int          | NO   | PRI | NULL    |       |
+| department_name | varchar(100) | NO   |     | NULL    |       |
+| floor_no        | int          | NO   |     | NULL    |       |
++-----------------+--------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> desc doctors;
++------------------+---------------+------+-----+---------+-------+
+| Field            | Type          | Null | Key | Default | Extra |
++------------------+---------------+------+-----+---------+-------+
+| doctor_id        | int           | NO   | PRI | NULL    |       |
+| doctor_name      | varchar(100)  | NO   |     | NULL    |       |
+| specialization   | varchar(100)  | NO   |     | NULL    |       |
+| consultation_fee | decimal(10,2) | NO   |     | NULL    |       |
+| department_id    | int           | NO   | MUL | NULL    |       |
+| status           | varchar(20)   | NO   |     | NULL    |       |
++------------------+---------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+mysql> desc patients;
++-------------------+--------------+------+-----+---------+-------+
+| Field             | Type         | Null | Key | Default | Extra |
++-------------------+--------------+------+-----+---------+-------+
+| patient_id        | int          | NO   | PRI | NULL    |       |
+| patient_name      | varchar(100) | NO   |     | NULL    |       |
+| city              | varchar(50)  | NO   |     | NULL    |       |
+| age               | int          | NO   |     | NULL    |       |
+| gender            | varchar(20)  | NO   |     | NULL    |       |
+| registration_date | date         | NO   |     | NULL    |       |
++-------------------+--------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+mysql> desc appointments;
++-------------------+-------------+------+-----+---------+-------+
+| Field             | Type        | Null | Key | Default | Extra |
++-------------------+-------------+------+-----+---------+-------+
+| appointment_id    | int         | NO   | PRI | NULL    |       |
+| patient_id        | int         | NO   | MUL | NULL    |       |
+| doctor_id         | int         | NO   | MUL | NULL    |       |
+| appointment_date  | date        | NO   |     | NULL    |       |
+| appointment_time  | time        | NO   |     | NULL    |       |
+| consultation_type | varchar(20) | NO   |     | NULL    |       |
+| status            | varchar(20) | NO   |     | NULL    |       |
++-------------------+-------------+------+-----+---------+-------+
+7 rows in set (0.00 sec)
+
+mysql>  desc bills;
++---------------------+---------------+------+-----+---------+-------+
+| Field               | Type          | Null | Key | Default | Extra |
++---------------------+---------------+------+-----+---------+-------+
+| bill_id             | int           | NO   | PRI | NULL    |       |
+| appointment_id      | int           | NO   | MUL | NULL    |       |
+| bill_date           | date          | NO   |     | NULL    |       |
+| consultation_charge | decimal(10,2) | NO   |     | NULL    |       |
+| test_charge         | decimal(10,2) | NO   |     | NULL    |       |
+| medicine_charge     | decimal(10,2) | NO   |     | NULL    |       |
+| total_amount        | decimal(10,2) | NO   |     | NULL    |       |
+| payment_status      | varchar(20)   | NO   |     | NULL    |       |
++---------------------+---------------+------+-----+---------+-------+
+8 rows in set (0.00 sec)
+
+mysql> desc payments;
++--------------+---------------+------+-----+---------+-------+
+| Field        | Type          | Null | Key | Default | Extra |
++--------------+---------------+------+-----+---------+-------+
+| payment_id   | int           | NO   | PRI | NULL    |       |
+| bill_id      | int           | NO   | MUL | NULL    |       |
+| payment_date | date          | NO   |     | NULL    |       |
+| amount_paid  | decimal(10,2) | NO   |     | NULL    |       |
+| payment_mode | varchar(30)   | NO   |     | NULL    |       |
++--------------+---------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT * FROM patients;
++------------+----------------+--------+-----+--------+-------------------+
+| patient_id | patient_name   | city   | age | gender | registration_date |
++------------+----------------+--------+-----+--------+-------------------+
+|        201 | Rahul Patil    | Pune   |  28 | Male   | 2026-01-10        |
+|        202 | Priya Sharma   | Mumbai |  34 | Female | 2026-02-15        |
+|        203 | Amit Joshi     | Pune   |  42 | Male   | 2025-12-20        |
+|        204 | Sneha Kulkarni | Nashik |  30 | Female | 2026-03-05        |
+|        205 | Raj Mehta      | Nagpur |  25 | Male   | 2026-04-01        |
+|        206 | Anjali More    | Pune   |  38 | Female | 2026-05-12        |
+|        207 | Rohan Deshmukh | Mumbai |  45 | Male   | 2026-06-18        |
+|        208 | Neha Shah      | Nashik |  29 | Female | 2025-11-22        |
++------------+----------------+--------+-----+--------+-------------------+
+8 rows in set (0.00 sec)
+
+mysql> SELECT * FROM doctors;
++-----------+--------------+------------------+------------------+---------------+----------+
+| doctor_id | doctor_name  | specialization   | consultation_fee | department_id | status   |
++-----------+--------------+------------------+------------------+---------------+----------+
+|       101 | Dr. Mehta    | Cardiology       |          1200.00 |             1 | Active   |
+|       102 | Dr. Sharma   | Dermatology      |           900.00 |             2 | Active   |
+|       103 | Dr. Patil    | Orthopedic       |          1000.00 |             3 | Active   |
+|       104 | Dr. Kulkarni | General Medicine |           700.00 |             4 | Active   |
+|       105 | Dr. Shah     | Cardiology       |          1500.00 |             1 | Active   |
+|       106 | Dr. More     | Orthopedic       |          1100.00 |             3 | Inactive |
++-----------+--------------+------------------+------------------+---------------+----------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT * FROM patients WHERE city = 'Pune';
++------------+--------------+------+-----+--------+-------------------+
+| patient_id | patient_name | city | age | gender | registration_date |
++------------+--------------+------+-----+--------+-------------------+
+|        201 | Rahul Patil  | Pune |  28 | Male   | 2026-01-10        |
+|        203 | Amit Joshi   | Pune |  42 | Male   | 2025-12-20        |
+|        206 | Anjali More  | Pune |  38 | Female | 2026-05-12        |
++------------+--------------+------+-----+--------+-------------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT * FROM doctors WHERE consultation_fee > 800;
++-----------+-------------+----------------+------------------+---------------+----------+
+| doctor_id | doctor_name | specialization | consultation_fee | department_id | status   |
++-----------+-------------+----------------+------------------+---------------+----------+
+|       101 | Dr. Mehta   | Cardiology     |          1200.00 |             1 | Active   |
+|       102 | Dr. Sharma  | Dermatology    |           900.00 |             2 | Active   |
+|       103 | Dr. Patil   | Orthopedic     |          1000.00 |             3 | Active   |
+|       105 | Dr. Shah    | Cardiology     |          1500.00 |             1 | Active   |
+|       106 | Dr. More    | Orthopedic     |          1100.00 |             3 | Inactive |
++-----------+-------------+----------------+------------------+---------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT * FROM doctors WHERE specialization = 'Cardiology';
++-----------+-------------+----------------+------------------+---------------+--------+
+| doctor_id | doctor_name | specialization | consultation_fee | department_id | status |
++-----------+-------------+----------------+------------------+---------------+--------+
+|       101 | Dr. Mehta   | Cardiology     |          1200.00 |             1 | Active |
+|       105 | Dr. Shah    | Cardiology     |          1500.00 |             1 | Active |
++-----------+-------------+----------------+------------------+---------------+--------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT * FROM appointments WHERE status = 'Completed';
++----------------+------------+-----------+------------------+------------------+-------------------+-----------+
+| appointment_id | patient_id | doctor_id | appointment_date | appointment_time | consultation_type | status    |
++----------------+------------+-----------+------------------+------------------+-------------------+-----------+
+|            301 |        201 |       101 | 2026-08-20       | 10:30:00         | Offline           | Completed |
+|            302 |        202 |       102 | 2026-08-22       | 11:00:00         | Online            | Completed |
+|            306 |        206 |       105 | 2026-08-25       | 16:30:00         | Offline           | Completed |
+|            307 |        207 |       103 | 2026-08-28       | 14:00:00         | Offline           | Completed |
+|            310 |        204 |       104 | 2026-08-30       | 11:45:00         | Offline           | Completed |
++----------------+------------+-----------+------------------+------------------+-------------------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT * FROM appointments WHERE consultation_type = 'Online';
++----------------+------------+-----------+------------------+------------------+-------------------+-----------+
+| appointment_id | patient_id | doctor_id | appointment_date | appointment_time | consultation_type | status    |
++----------------+------------+-----------+------------------+------------------+-------------------+-----------+
+|            302 |        202 |       102 | 2026-08-22       | 11:00:00         | Online            | Completed |
+|            305 |        205 |       104 | 2026-09-03       | 15:00:00         | Online            | Pending   |
+|            308 |        208 |       102 | 2026-09-04       | 13:30:00         | Online            | Pending   |
++----------------+------------+-----------+------------------+------------------+-------------------+-----------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT * FROM patients WHERE age BETWEEN 25 AND 40;
++------------+----------------+--------+-----+--------+-------------------+
+| patient_id | patient_name   | city   | age | gender | registration_date |
++------------+----------------+--------+-----+--------+-------------------+
+|        201 | Rahul Patil    | Pune   |  28 | Male   | 2026-01-10        |
+|        202 | Priya Sharma   | Mumbai |  34 | Female | 2026-02-15        |
+|        204 | Sneha Kulkarni | Nashik |  30 | Female | 2026-03-05        |
+|        205 | Raj Mehta      | Nagpur |  25 | Male   | 2026-04-01        |
+|        206 | Anjali More    | Pune   |  38 | Female | 2026-05-12        |
+|        208 | Neha Shah      | Nashik |  29 | Female | 2025-11-22        |
++------------+----------------+--------+-----+--------+-------------------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT * FROM doctors ORDER BY consultation_fee DESC;
++-----------+--------------+------------------+------------------+---------------+----------+
+| doctor_id | doctor_name  | specialization   | consultation_fee | department_id | status   |
++-----------+--------------+------------------+------------------+---------------+----------+
+|       105 | Dr. Shah     | Cardiology       |          1500.00 |             1 | Active   |
+|       101 | Dr. Mehta    | Cardiology       |          1200.00 |             1 | Active   |
+|       106 | Dr. More     | Orthopedic       |          1100.00 |             3 | Inactive |
+|       103 | Dr. Patil    | Orthopedic       |          1000.00 |             3 | Active   |
+|       102 | Dr. Sharma   | Dermatology      |           900.00 |             2 | Active   |
+|       104 | Dr. Kulkarni | General Medicine |           700.00 |             4 | Active   |
++-----------+--------------+------------------+------------------+---------------+----------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT * FROM doctors ORDER BY consultation_fee DESC LIMIT 5;
++-----------+-------------+----------------+------------------+---------------+----------+
+| doctor_id | doctor_name | specialization | consultation_fee | department_id | status   |
++-----------+-------------+----------------+------------------+---------------+----------+
+|       105 | Dr. Shah    | Cardiology     |          1500.00 |             1 | Active   |
+|       101 | Dr. Mehta   | Cardiology     |          1200.00 |             1 | Active   |
+|       106 | Dr. More    | Orthopedic     |          1100.00 |             3 | Inactive |
+|       103 | Dr. Patil   | Orthopedic     |          1000.00 |             3 | Active   |
+|       102 | Dr. Sharma  | Dermatology    |           900.00 |             2 | Active   |
++-----------+-------------+----------------+------------------+---------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT * FROM patients WHERE patient_name LIKE 'A%';
++------------+--------------+------+-----+--------+-------------------+
+| patient_id | patient_name | city | age | gender | registration_date |
++------------+--------------+------+-----+--------+-------------------+
+|        203 | Amit Joshi   | Pune |  42 | Male   | 2025-12-20        |
+|        206 | Anjali More  | Pune |  38 | Female | 2026-05-12        |
++------------+--------------+------+-----+--------+-------------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT * FROM patients WHERE city IN ('Pune', 'Mumbai', 'Nashik');
++------------+----------------+--------+-----+--------+-------------------+
+| patient_id | patient_name   | city   | age | gender | registration_date |
++------------+----------------+--------+-----+--------+-------------------+
+|        201 | Rahul Patil    | Pune   |  28 | Male   | 2026-01-10        |
+|        202 | Priya Sharma   | Mumbai |  34 | Female | 2026-02-15        |
+|        203 | Amit Joshi     | Pune   |  42 | Male   | 2025-12-20        |
+|        204 | Sneha Kulkarni | Nashik |  30 | Female | 2026-03-05        |
+|        206 | Anjali More    | Pune   |  38 | Female | 2026-05-12        |
+|        207 | Rohan Deshmukh | Mumbai |  45 | Male   | 2026-06-18        |
+|        208 | Neha Shah      | Nashik |  29 | Female | 2025-11-22        |
++------------+----------------+--------+-----+--------+-------------------+
+7 rows in set (0.00 sec)
+
+mysql> SELECT * FROM appointments WHERE appointment_date > '2026-09-01';
++----------------+------------+-----------+------------------+------------------+-------------------+---------+
+| appointment_id | patient_id | doctor_id | appointment_date | appointment_time | consultation_type | status  |
++----------------+------------+-----------+------------------+------------------+-------------------+---------+
+|            304 |        204 |       101 | 2026-09-02       | 09:45:00         | Offline           | Booked  |
+|            305 |        205 |       104 | 2026-09-03       | 15:00:00         | Online            | Pending |
+|            308 |        208 |       102 | 2026-09-04       | 13:30:00         | Online            | Pending |
+|            309 |        201 |       105 | 2026-09-05       | 10:00:00         | Offline           | Booked  |
++----------------+------------+-----------+------------------+------------------+-------------------+---------+
+4 rows in set (0.04 sec)
+
+mysql>  SELECT * FROM bills WHERE total_amount > 5000;
++---------+----------------+------------+---------------------+-------------+-----------------+--------------+----------------+
+| bill_id | appointment_id | bill_date  | consultation_charge | test_charge | medicine_charge | total_amount | payment_status |
++---------+----------------+------------+---------------------+-------------+-----------------+--------------+----------------+
+|     401 |            301 | 2026-08-20 |             1200.00 |     3000.00 |         1500.00 |      5700.00 | Paid           |
+|     403 |            306 | 2026-08-25 |             1500.00 |     4500.00 |         2200.00 |      8200.00 | Partial        |
++---------+----------------+------------+---------------------+-------------+-----------------+--------------+----------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT * FROM payments WHERE payment_mode = 'UPI';
++------------+---------+--------------+-------------+--------------+
+| payment_id | bill_id | payment_date | amount_paid | payment_mode |
++------------+---------+--------------+-------------+--------------+
+|        501 |     401 | 2026-08-20   |     5700.00 | UPI          |
+|        503 |     403 | 2026-08-25   |     4000.00 | UPI          |
++------------+---------+--------------+-------------+--------------+
+2 rows in set (0.00 sec)
+
+mysql> UPDATE patients SET city = 'Mumbai' WHERE patient_id = 201;
+Query OK, 1 row affected (0.05 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> UPDATE doctors SET consultation_fee = consultation_fee * 1.10 WHERE specialization = 'Cardiology';
+Query OK, 2 rows affected (0.05 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+mysql>
+mysql> 3. UPDATE appointments SET status = 'Completed' WHERE appointment_id = 304 AND status = 'Booked';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '3. UPDATE appointments SET status = 'Completed' WHERE appointment_id = 304 AND s' at line 1
+mysql> UPDATE appointments SET status = 'Completed' WHERE appointment_id = 304 AND status = 'Booked';
+Query OK, 1 row affected (0.05 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> UPDATE appointments SET status = 'Cancelled' WHERE status = 'Pending' AND appointment_date < '2026-09-01';
+Query OK, 0 rows affected (0.00 sec)
+Rows matched: 0  Changed: 0  Warnings: 0
+
+UPDATE appointments SET status = 'Cancelled' WHERE status = 'Pending' AND appointment_date < '2026-09-01';
+Query OK, 0 rows affected (0.00 sec)
+Rows matched: 0  Changed: 0  Warnings: 0
+
+mysql> ^C
+mysql> UPDATE bills SET payment_status = 'Paid' WHERE bill_id = 405;
+Query OK, 1 row affected (0.04 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql>  UPDATE bills SET medicine_charge = medicine_charge + 500 WHERE bill_id = 401;
+Query OK, 1 row affected (0.05 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> UPDATE bills SET total_amount = consultation_charge + test_charge + medicine_charge WHERE bill_id = 401;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql>  UPDATE appointments SET consultation_type = 'Online' WHERE appointment_id = 301;
+Query OK, 1 row affected (0.05 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> UPDATE doctors SET status = 'Active' WHERE doctor_id = 106;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> UPDATE doctors SET consultation_fee = consultation_fee * 0.95 WHERE specialization = 'General Medicine';
+Query OK, 1 row affected (0.04 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> DELETE FROM appointments WHERE appointment_id = 303;
+Query OK, 1 row affected (0.05 sec)
+
+mysql> DELETE FROM appointments WHERE status = 'Cancelled' AND appointment_date < DATE_SUB(CURDATE(), INTERVAL 1 YEAR);
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> DELETE FROM payments WHERE payment_id = 505;
+Query OK, 1 row affected (0.05 sec)
+
+mysql> DELETE FROM bills WHERE total_amount = 0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> DELETE FROM patients WHERE patient_id NOT IN (SELECT patient_id FROM appointments);
+Query OK, 1 row affected (0.05 sec)
+
+mysql> SELECT COUNT(*) AS total_patients FROM patients;
++----------------+
+| total_patients |
++----------------+
+|              7 |
++----------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT COUNT(*) AS total_doctors FROM doctors;
++---------------+
+| total_doctors |
++---------------+
+|             6 |
++---------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT COUNT(*) AS total_appointments FROM appointments;
++--------------------+
+| total_appointments |
++--------------------+
+|                  9 |
++--------------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT COUNT(*) AS completed_appointments FROM appointments WHERE status = 'Completed';
++------------------------+
+| completed_appointments |
++------------------------+
+|                      6 |
++------------------------+
+1 row in set (0.00 sec)
+
+mysql>  SELECT AVG(consultation_fee) AS avg_fee FROM doctors;
++-------------+
+| avg_fee     |
++-------------+
+| 1105.833333 |
++-------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT MAX(consultation_fee) AS max_fee FROM doctors;
++---------+
+| max_fee |
++---------+
+| 1650.00 |
++---------+
+1 row in set (0.00 sec)
+
+mysql> SELECT MIN(consultation_fee) AS min_fee FROM doctors;
++---------+
+| min_fee |
++---------+
+|  665.00 |
++---------+
+1 row in set (0.00 sec)
+
+mysql> SELECT city, COUNT(*) AS total_patients FROM patients GROUP BY city;
++--------+----------------+
+| city   | total_patients |
++--------+----------------+
+| Mumbai |              3 |
+| Nashik |              2 |
+| Nagpur |              1 |
+| Pune   |              1 |
++--------+----------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT specialization, COUNT(*) AS total_doctors FROM doctors GROUP BY specialization;
++------------------+---------------+
+| specialization   | total_doctors |
++------------------+---------------+
+| Cardiology       |             2 |
+| Dermatology      |             1 |
+| Orthopedic       |             2 |
+| General Medicine |             1 |
++------------------+---------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT status, COUNT(*) AS total_appointments FROM appointments GROUP BY status;
++-----------+--------------------+
+| status    | total_appointments |
++-----------+--------------------+
+| Completed |                  6 |
+| Pending   |                  2 |
+| Booked    |                  1 |
++-----------+--------------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT consultation_type, COUNT(*) AS total FROM appointments GROUP BY consultation_type;
++-------------------+-------+
+| consultation_type | total |
++-------------------+-------+
+| Online            |     4 |
+| Offline           |     5 |
++-------------------+-------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT SUM(total_amount) AS total_billing FROM bills;
++---------------+
+| total_billing |
++---------------+
+|      25800.00 |
++---------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT AVG(total_amount) AS avg_bill FROM bills;
++-------------+
+| avg_bill    |
++-------------+
+| 4300.000000 |
++-------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT payment_mode, SUM(amount_paid) AS total_collected FROM payments GROUP BY payment_mode;
++--------------+-----------------+
+| payment_mode | total_collected |
++--------------+-----------------+
+| UPI          |         9700.00 |
+| Card         |         2700.00 |
+| Cash         |         4700.00 |
++--------------+-----------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT DATE_FORMAT(appointment_date, '%Y-%m') AS month, COUNT(*) AS completed FROM appointments WHERE status='Completed' GROUP BY DATE_FORMAT(appointment_date, '%Y-%m');
++---------+-----------+
+| month   | completed |
++---------+-----------+
+| 2026-08 |         5 |
+| 2026-09 |         1 |
++---------+-----------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT p.patient_name, a.appointment_date, a.status
+    -> FROM patients p JOIN appointments a ON p.patient_id = a.patient_id;
++----------------+------------------+-----------+
+| patient_name   | appointment_date | status    |
++----------------+------------------+-----------+
+| Rahul Patil    | 2026-08-20       | Completed |
+| Rahul Patil    | 2026-09-05       | Booked    |
+| Priya Sharma   | 2026-08-22       | Completed |
+| Sneha Kulkarni | 2026-09-02       | Completed |
+| Sneha Kulkarni | 2026-08-30       | Completed |
+| Raj Mehta      | 2026-09-03       | Pending   |
+| Anjali More    | 2026-08-25       | Completed |
+| Rohan Deshmukh | 2026-08-28       | Completed |
+| Neha Shah      | 2026-09-04       | Pending   |
++----------------+------------------+-----------+
+9 rows in set (0.00 sec)
+
+mysql> SELECT d.doctor_name, a.patient_id, a.appointment_date, a.status
+    -> FROM doctors d JOIN appointments a ON d.doctor_id = a.doctor_id;
++--------------+------------+------------------+-----------+
+| doctor_name  | patient_id | appointment_date | status    |
++--------------+------------+------------------+-----------+
+| Dr. Mehta    |        201 | 2026-08-20       | Completed |
+| Dr. Mehta    |        204 | 2026-09-02       | Completed |
+| Dr. Sharma   |        202 | 2026-08-22       | Completed |
+| Dr. Sharma   |        208 | 2026-09-04       | Pending   |
+| Dr. Patil    |        207 | 2026-08-28       | Completed |
+| Dr. Kulkarni |        205 | 2026-09-03       | Pending   |
+| Dr. Kulkarni |        204 | 2026-08-30       | Completed |
+| Dr. Shah     |        206 | 2026-08-25       | Completed |
+| Dr. Shah     |        201 | 2026-09-05       | Booked    |
++--------------+------------+------------------+-----------+
+9 rows in set (0.00 sec)
+
+mysql> SELECT p.patient_name, d.doctor_name, d.specialization, a.appointment_date, a.status
+    -> FROM patients p
+    -> JOIN appointments a ON p.patient_id = a.patient_id
+    -> JOIN doctors d ON a.doctor_id = d.doctor_id;
++----------------+--------------+------------------+------------------+-----------+
+| patient_name   | doctor_name  | specialization   | appointment_date | status    |
++----------------+--------------+------------------+------------------+-----------+
+| Rahul Patil    | Dr. Mehta    | Cardiology       | 2026-08-20       | Completed |
+| Sneha Kulkarni | Dr. Mehta    | Cardiology       | 2026-09-02       | Completed |
+| Priya Sharma   | Dr. Sharma   | Dermatology      | 2026-08-22       | Completed |
+| Neha Shah      | Dr. Sharma   | Dermatology      | 2026-09-04       | Pending   |
+| Rohan Deshmukh | Dr. Patil    | Orthopedic       | 2026-08-28       | Completed |
+| Raj Mehta      | Dr. Kulkarni | General Medicine | 2026-09-03       | Pending   |
+| Sneha Kulkarni | Dr. Kulkarni | General Medicine | 2026-08-30       | Completed |
+| Anjali More    | Dr. Shah     | Cardiology       | 2026-08-25       | Completed |
+| Rahul Patil    | Dr. Shah     | Cardiology       | 2026-09-05       | Booked    |
++----------------+--------------+------------------+------------------+-----------+
+9 rows in set (0.00 sec)
+
+mysql> SELECT d.doctor_name, d.specialization, dept.department_name
+    -> FROM doctors d JOIN departments dept ON d.department_id = dept.department_id;
++--------------+------------------+------------------+
+| doctor_name  | specialization   | department_name  |
++--------------+------------------+------------------+
+| Dr. Mehta    | Cardiology       | Cardiology       |
+| Dr. Shah     | Cardiology       | Cardiology       |
+| Dr. Sharma   | Dermatology      | Dermatology      |
+| Dr. Patil    | Orthopedic       | Orthopedic       |
+| Dr. More     | Orthopedic       | Orthopedic       |
+| Dr. Kulkarni | General Medicine | General Medicine |
++--------------+------------------+------------------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT a.appointment_id, b.bill_date, b.total_amount, b.payment_status
+    -> FROM appointments a JOIN bills b ON a.appointment_id = b.appointment_id;
++----------------+------------+--------------+----------------+
+| appointment_id | bill_date  | total_amount | payment_status |
++----------------+------------+--------------+----------------+
+|            301 | 2026-08-20 |      6200.00 | Paid           |
+|            302 | 2026-08-22 |      2700.00 | Paid           |
+|            306 | 2026-08-25 |      8200.00 | Partial        |
+|            307 | 2026-08-28 |      4700.00 | Paid           |
+|            310 | 2026-08-30 |      2800.00 | Paid           |
+|            304 | 2026-09-02 |      1200.00 | Pending        |
++----------------+------------+--------------+----------------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT p.patient_name, a.appointment_date, b.total_amount, b.payment_status
+    -> FROM patients p
+    -> JOIN appointments a ON p.patient_id = a.patient_id
+    -> JOIN bills b ON a.appointment_id = b.appointment_id;
++----------------+------------------+--------------+----------------+
+| patient_name   | appointment_date | total_amount | payment_status |
++----------------+------------------+--------------+----------------+
+| Rahul Patil    | 2026-08-20       |      6200.00 | Paid           |
+| Priya Sharma   | 2026-08-22       |      2700.00 | Paid           |
+| Anjali More    | 2026-08-25       |      8200.00 | Partial        |
+| Rohan Deshmukh | 2026-08-28       |      4700.00 | Paid           |
+| Sneha Kulkarni | 2026-08-30       |      2800.00 | Paid           |
+| Sneha Kulkarni | 2026-09-02       |      1200.00 | Pending        |
++----------------+------------------+--------------+----------------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT p.patient_name, b.total_amount, pay.amount_paid, pay.payment_mode
+    -> FROM patients p
+    -> JOIN appointments a ON p.patient_id = a.patient_id
+    -> JOIN bills b ON a.appointment_id = b.appointment_id
+    -> JOIN payments pay ON b.bill_id = pay.bill_id;
++----------------+--------------+-------------+--------------+
+| patient_name   | total_amount | amount_paid | payment_mode |
++----------------+--------------+-------------+--------------+
+| Rahul Patil    |      6200.00 |     5700.00 | UPI          |
+| Priya Sharma   |      2700.00 |     2700.00 | Card         |
+| Anjali More    |      8200.00 |     4000.00 | UPI          |
+| Rohan Deshmukh |      4700.00 |     4700.00 | Cash         |
++----------------+--------------+-------------+--------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT d.doctor_name, COUNT(a.appointment_id) AS appointment_count
+    -> FROM doctors d LEFT JOIN appointments a ON d.doctor_id = a.doctor_id
+    -> GROUP BY d.doctor_name;
++--------------+-------------------+
+| doctor_name  | appointment_count |
++--------------+-------------------+
+| Dr. Mehta    |                 2 |
+| Dr. Sharma   |                 2 |
+| Dr. Patil    |                 1 |
+| Dr. Kulkarni |                 2 |
+| Dr. Shah     |                 2 |
+| Dr. More     |                 0 |
++--------------+-------------------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT dept.department_name, COUNT(d.doctor_id) AS doctor_count
+    -> FROM departments dept LEFT JOIN doctors d ON dept.department_id = d.department_id
+    -> GROUP BY dept.department_name;
++------------------+--------------+
+| department_name  | doctor_count |
++------------------+--------------+
+| Cardiology       |            2 |
+| Dermatology      |            1 |
+| Orthopedic       |            2 |
+| General Medicine |            1 |
++------------------+--------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT d.doctor_name, SUM(b.total_amount) AS total_billing
+    -> FROM doctors d
+    -> JOIN appointments a ON d.doctor_id = a.doctor_id
+    -> JOIN bills b ON a.appointment_id = b.appointment_id
+    -> GROUP BY d.doctor_name;
++--------------+---------------+
+| doctor_name  | total_billing |
++--------------+---------------+
+| Dr. Mehta    |       7400.00 |
+| Dr. Sharma   |       2700.00 |
+| Dr. Patil    |       4700.00 |
+| Dr. Kulkarni |       2800.00 |
+| Dr. Shah     |       8200.00 |
++--------------+---------------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT dept.department_name, SUM(b.total_amount) AS total_revenue
+    -> FROM departments dept
+    -> JOIN doctors d ON dept.department_id = d.department_id
+    -> JOIN appointments a ON d.doctor_id = a.doctor_id
+    -> JOIN bills b ON a.appointment_id = b.appointment_id
+    -> GROUP BY dept.department_name;
++------------------+---------------+
+| department_name  | total_revenue |
++------------------+---------------+
+| Cardiology       |      15600.00 |
+| Dermatology      |       2700.00 |
+| Orthopedic       |       4700.00 |
+| General Medicine |       2800.00 |
++------------------+---------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT p.patient_name, SUM(b.total_amount) AS total_billing
+    -> FROM patients p
+    -> JOIN appointments a ON p.patient_id = a.patient_id
+    -> JOIN bills b ON a.appointment_id = b.appointment_id
+    -> GROUP BY p.patient_name;
++----------------+---------------+
+| patient_name   | total_billing |
++----------------+---------------+
+| Rahul Patil    |       6200.00 |
+| Priya Sharma   |       2700.00 |
+| Anjali More    |       8200.00 |
+| Rohan Deshmukh |       4700.00 |
+| Sneha Kulkarni |       4000.00 |
++----------------+---------------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT p.patient_name, COUNT(a.appointment_id) AS total_appointments
+    -> FROM patients p JOIN appointments a ON p.patient_id = a.patient_id
+    -> GROUP BY p.patient_name HAVING COUNT(a.appointment_id) > 1;
++----------------+--------------------+
+| patient_name   | total_appointments |
++----------------+--------------------+
+| Rahul Patil    |                  2 |
+| Sneha Kulkarni |                  2 |
++----------------+--------------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT d.doctor_name, COUNT(a.appointment_id) AS completed_count
+    -> FROM doctors d JOIN appointments a ON d.doctor_id = a.doctor_id
+    -> WHERE a.status = 'Completed'
+    -> GROUP BY d.doctor_name HAVING COUNT(a.appointment_id) > 3;
+Empty set (0.00 sec)
+
+mysql>  SELECT d.doctor_name, SUM(b.total_amount) AS total_billing
+    -> FROM doctors d
+    -> JOIN appointments a ON d.doctor_id = a.doctor_id
+    -> JOIN bills b ON a.appointment_id = b.appointment_id
+    -> GROUP BY d.doctor_name
+    -> ORDER BY total_billing DESC LIMIT 1;
++-------------+---------------+
+| doctor_name | total_billing |
++-------------+---------------+
+| Dr. Shah    |       8200.00 |
++-------------+---------------+
+1 row in set (0.00 sec)
