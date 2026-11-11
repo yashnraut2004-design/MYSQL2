@@ -1,0 +1,385 @@
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| college            |
+| company_xyz        |
+| compny             |
+| compy_xyz          |
+| information_schema |
+| mysql              |
+| performance_schema |
+| school             |
+| working            |
++--------------------+
+9 rows in set (0.12 sec)
+
+mysql> use working;
+Database changed
+mysql> describe working;
+ERROR 1146 (42S02): Table 'working.working' doesn't exist
+mysql> dec products , customers , orders, employees;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dec products , customers , orders, employees' at line 1
+mysql> desc customers;
++-------------------+--------------+------+-----+---------+-------+
+| Field             | Type         | Null | Key | Default | Extra |
++-------------------+--------------+------+-----+---------+-------+
+| customer_id       | int          | NO   | PRI | NULL    |       |
+| customer_name     | varchar(100) | NO   |     | NULL    |       |
+| city              | varchar(50)  | NO   |     | NULL    |       |
+| registration_date | date         | NO   |     | NULL    |       |
++-------------------+--------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> desc orders;
++--------------+---------------+------+-----+---------+-------+
+| Field        | Type          | Null | Key | Default | Extra |
++--------------+---------------+------+-----+---------+-------+
+| order_id     | int           | NO   | PRI | NULL    |       |
+| customer_id  | int           | NO   | MUL | NULL    |       |
+| branch_id    | int           | NO   | MUL | NULL    |       |
+| order_date   | date          | NO   |     | NULL    |       |
+| payment_mode | varchar(30)   | NO   |     | NULL    |       |
+| status       | varchar(30)   | NO   |     | NULL    |       |
+| order_total  | decimal(10,2) | NO   |     | NULL    |       |
++--------------+---------------+------+-----+---------+-------+
+7 rows in set (0.00 sec)
+
+mysql> desc employees;
++---------------+---------------+------+-----+---------+-------+
+| Field         | Type          | Null | Key | Default | Extra |
++---------------+---------------+------+-----+---------+-------+
+| employee_id   | int           | NO   | PRI | NULL    |       |
+| employee_name | varchar(100)  | NO   |     | NULL    |       |
+| salary        | decimal(10,2) | NO   |     | NULL    |       |
+| branch_id     | int           | NO   | MUL | NULL    |       |
++---------------+---------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> desc products;
++--------------+---------------+------+-----+---------+-------+
+| Field        | Type          | Null | Key | Default | Extra |
++--------------+---------------+------+-----+---------+-------+
+| product_id   | int           | NO   | PRI | NULL    |       |
+| product_name | varchar(100)  | NO   |     | NULL    |       |
+| category     | varchar(50)   | NO   |     | NULL    |       |
+| price        | decimal(10,2) | NO   |     | NULL    |       |
+| stock        | int           | NO   |     | NULL    |       |
++--------------+---------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT * FROM products;
++------------+----------------+-------------+-----------+-------+
+| product_id | product_name   | category    | price     | stock |
++------------+----------------+-------------+-----------+-------+
+|        201 | Laptop         | Electronics | 102700.00 |     8 |
+|        202 | Wireless Mouse | Electronics |   1896.00 |    25 |
+|        203 | Keyboard       | Electronics |   3950.00 |    15 |
+|        204 | Office Chair   | Furniture   |   8500.00 |     6 |
+|        205 | Study Table    | Furniture   |  12000.00 |    12 |
+|        206 | Printer        | Electronics |  28440.00 |     5 |
+|        207 | Notebook Pack  | Stationery  |    500.00 |    40 |
+|        208 | Pen Drive 64GB | Electronics |   2370.00 |    18 |
+|        209 | Monitor        | Electronics |  22120.00 |     9 |
+|        210 | Projector      | Electronics |  71100.00 |     4 |
++------------+----------------+-------------+-----------+-------+
+10 rows in set (0.03 sec)
+
+mysql> SELECT * FROM customers WHERE city = 'Pune';
++-------------+---------------+------+-------------------+
+| customer_id | customer_name | city | registration_date |
++-------------+---------------+------+-------------------+
+|         101 | Rahul Patil   | Pune | 2026-01-15        |
+|         103 | Amit Joshi    | Pune | 2025-11-20        |
+|         106 | Anjali More   | Pune | 2026-04-12        |
++-------------+---------------+------+-------------------+
+3 rows in set (0.06 sec)
+
+mysql> SELECT * FROM products WHERE price > 5000;
++------------+--------------+-------------+-----------+-------+
+| product_id | product_name | category    | price     | stock |
++------------+--------------+-------------+-----------+-------+
+|        201 | Laptop       | Electronics | 102700.00 |     8 |
+|        204 | Office Chair | Furniture   |   8500.00 |     6 |
+|        205 | Study Table  | Furniture   |  12000.00 |    12 |
+|        206 | Printer      | Electronics |  28440.00 |     5 |
+|        209 | Monitor      | Electronics |  22120.00 |     9 |
+|        210 | Projector    | Electronics |  71100.00 |     4 |
++------------+--------------+-------------+-----------+-------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT * FROM employees WHERE salary BETWEEN 25000 AND 50000;
++-------------+-----------------+----------+-----------+
+| employee_id | employee_name   | salary   | branch_id |
++-------------+-----------------+----------+-----------+
+|         301 | Amit Patil      | 42000.00 |         1 |
+|         302 | Priya Sharma    | 38000.00 |         1 |
+|         304 | Sneha Joshi     | 29000.00 |         2 |
+|         306 | Anjali Deshmukh | 47000.00 |         3 |
+|         308 | Ayesha Khan     | 50000.00 |         4 |
++-------------+-----------------+----------+-----------+
+5 rows in set (0.06 sec)
+
+mysql> SELECT * FROM orders WHERE payment_mode = 'UPI';
++----------+-------------+-----------+------------+--------------+-----------+-------------+
+| order_id | customer_id | branch_id | order_date | payment_mode | status    | order_total |
++----------+-------------+-----------+------------+--------------+-----------+-------------+
+|      401 |         101 |         1 | 2026-01-20 | UPI          | Completed |    67400.00 |
+|      404 |         104 |         3 | 2026-03-08 | UPI          | Pending   |    18000.00 |
+|      406 |         106 |         1 | 2026-04-15 | UPI          | Completed |    15000.00 |
+|      408 |         108 |         3 | 2026-06-02 | UPI          | Pending   |    14000.00 |
+|      410 |         104 |         3 | 2026-08-05 | UPI          | Completed |     9800.00 |
++----------+-------------+-----------+------------+--------------+-----------+-------------+
+5 rows in set (0.06 sec)
+
+mysql> SELECT * FROM orders WHERE status = 'Completed';
++----------+-------------+-----------+------------+--------------+-----------+-------------+
+| order_id | customer_id | branch_id | order_date | payment_mode | status    | order_total |
++----------+-------------+-----------+------------+--------------+-----------+-------------+
+|      401 |         101 |         1 | 2026-01-20 | UPI          | Completed |    67400.00 |
+|      402 |         102 |         2 | 2026-02-12 | Card         | Completed |     8500.00 |
+|      406 |         106 |         1 | 2026-04-15 | UPI          | Completed |    15000.00 |
+|      407 |         107 |         2 | 2026-05-28 | Cash         | Completed |    45000.00 |
+|      409 |         101 |         1 | 2026-07-10 | Card         | Completed |    20500.00 |
+|      410 |         104 |         3 | 2026-08-05 | UPI          | Completed |     9800.00 |
++----------+-------------+-----------+------------+--------------+-----------+-------------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT * FROM products ORDER BY price DESC;
++------------+----------------+-------------+-----------+-------+
+| product_id | product_name   | category    | price     | stock |
++------------+----------------+-------------+-----------+-------+
+|        201 | Laptop         | Electronics | 102700.00 |     8 |
+|        210 | Projector      | Electronics |  71100.00 |     4 |
+|        206 | Printer        | Electronics |  28440.00 |     5 |
+|        209 | Monitor        | Electronics |  22120.00 |     9 |
+|        205 | Study Table    | Furniture   |  12000.00 |    12 |
+|        204 | Office Chair   | Furniture   |   8500.00 |     6 |
+|        203 | Keyboard       | Electronics |   3950.00 |    15 |
+|        208 | Pen Drive 64GB | Electronics |   2370.00 |    18 |
+|        202 | Wireless Mouse | Electronics |   1896.00 |    25 |
+|        207 | Notebook Pack  | Stationery  |    500.00 |    40 |
++------------+----------------+-------------+-----------+-------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT * FROM products ORDER BY price DESC LIMIT 5;
++------------+--------------+-------------+-----------+-------+
+| product_id | product_name | category    | price     | stock |
++------------+--------------+-------------+-----------+-------+
+|        201 | Laptop       | Electronics | 102700.00 |     8 |
+|        210 | Projector    | Electronics |  71100.00 |     4 |
+|        206 | Printer      | Electronics |  28440.00 |     5 |
+|        209 | Monitor      | Electronics |  22120.00 |     9 |
+|        205 | Study Table  | Furniture   |  12000.00 |    12 |
++------------+--------------+-------------+-----------+-------+
+5 rows in set (0.00 sec)
+
+mysql>  SELECT * FROM customers WHERE YEAR(registration_date) = YEAR(CURDATE());
++-------------+----------------+--------+-------------------+
+| customer_id | customer_name  | city   | registration_date |
++-------------+----------------+--------+-------------------+
+|         101 | Rahul Patil    | Pune   | 2026-01-15        |
+|         102 | Priya Sharma   | Mumbai | 2026-02-10        |
+|         104 | Sneha Kulkarni | Nashik | 2026-03-05        |
+|         106 | Anjali More    | Pune   | 2026-04-12        |
+|         107 | Rohan Deshmukh | Mumbai | 2026-05-25        |
++-------------+----------------+--------+-------------------+
+5 rows in set (0.04 sec)
+
+mysql> SELECT * FROM employees WHERE employee_name LIKE 'A%';
++-------------+-----------------+----------+-----------+
+| employee_id | employee_name   | salary   | branch_id |
++-------------+-----------------+----------+-----------+
+|         301 | Amit Patil      | 42000.00 |         1 |
+|         303 | Akash More      | 55000.00 |         2 |
+|         306 | Anjali Deshmukh | 47000.00 |         3 |
+|         308 | Ayesha Khan     | 50000.00 |         4 |
++-------------+-----------------+----------+-----------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT * FROM customers WHERE city IN ('Pune', 'Mumbai', 'Nashik');
++-------------+----------------+--------+-------------------+
+| customer_id | customer_name  | city   | registration_date |
++-------------+----------------+--------+-------------------+
+|         101 | Rahul Patil    | Pune   | 2026-01-15        |
+|         102 | Priya Sharma   | Mumbai | 2026-02-10        |
+|         103 | Amit Joshi     | Pune   | 2025-11-20        |
+|         104 | Sneha Kulkarni | Nashik | 2026-03-05        |
+|         106 | Anjali More    | Pune   | 2026-04-12        |
+|         107 | Rohan Deshmukh | Mumbai | 2026-05-25        |
+|         108 | Neha Shah      | Nashik | 2025-12-01        |
++-------------+----------------+--------+-------------------+
+7 rows in set (0.00 sec)
+
+mysql> SELECT * FROM products WHERE stock < 10;
++------------+--------------+-------------+-----------+-------+
+| product_id | product_name | category    | price     | stock |
++------------+--------------+-------------+-----------+-------+
+|        201 | Laptop       | Electronics | 102700.00 |     8 |
+|        204 | Office Chair | Furniture   |   8500.00 |     6 |
+|        206 | Printer      | Electronics |  28440.00 |     5 |
+|        209 | Monitor      | Electronics |  22120.00 |     9 |
+|        210 | Projector    | Electronics |  71100.00 |     4 |
++------------+--------------+-------------+-----------+-------+
+5 rows in set (0.00 sec)
+
+mysql> UPDATE products SET price = price * 1.05 WHERE category = 'Electronics';
+Query OK, 7 rows affected (0.06 sec)
+Rows matched: 7  Changed: 7  Warnings: 0
+
+mysql> UPDATE orders SET status = 'Completed' WHERE order_id = 404 AND status = 'Pending';
+Query OK, 1 row affected (0.05 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> DELETE FROM orders WHERE status = 'Cancelled' AND order_date < DATE_SUB(CURDATE(), INTERVAL 1 YEAR);
+ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`working`.`order_items`, CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`))
+mysql> DELETE FROM orders WHERE status = 'Cancelled' AND order_date < DATE_SUB(CURDATE(), INTERVAL 1 YEAR);
+ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`working`.`order_items`, CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`))
+mysql> SELECT COUNT(*) AS total_customers FROM customers;
++-----------------+
+| total_customers |
++-----------------+
+|               8 |
++-----------------+
+1 row in set (0.04 sec)
+
+mysql> SELECT COUNT(*) AS total_products FROM products;
++----------------+
+| total_products |
++----------------+
+|             10 |
++----------------+
+1 row in set (0.00 sec)
+
+mysql> -- 10
+mysql> SELECT COUNT(*) AS completed_orders FROM orders WHERE status = 'Completed';
++------------------+
+| completed_orders |
++------------------+
+|                7 |
++------------------+
+1 row in set (0.00 sec)
+
+mysql>  SELECT AVG(price) AS avg_price FROM products;
++--------------+
+| avg_price    |
++--------------+
+| 26520.480000 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT * FROM products ORDER BY price DESC LIMIT 1;
++------------+--------------+-------------+-----------+-------+
+| product_id | product_name | category    | price     | stock |
++------------+--------------+-------------+-----------+-------+
+|        201 | Laptop       | Electronics | 107835.00 |     8 |
++------------+--------------+-------------+-----------+-------+
+1 row in set (0.00 sec)
+
+mysql> SELECT MIN(salary) AS min_salary FROM employees;
++------------+
+| min_salary |
++------------+
+|   24000.00 |
++------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT SUM(stock) AS total_stock FROM products;
++-------------+
+| total_stock |
++-------------+
+|         142 |
++-------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT city, COUNT(*) AS total_customers FROM customers GROUP BY city;
++--------+-----------------+
+| city   | total_customers |
++--------+-----------------+
+| Pune   |               3 |
+| Mumbai |               2 |
+| Nashik |               2 |
+| Nagpur |               1 |
++--------+-----------------+
+4 rows in set (0.04 sec)
+
+mysql> SELECT category, COUNT(*) AS total_products FROM products GROUP BY category;
++-------------+----------------+
+| category    | total_products |
++-------------+----------------+
+| Electronics |              7 |
+| Furniture   |              2 |
+| Stationery  |              1 |
++-------------+----------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT branch_id, AVG(salary) AS avg_salary FROM employees GROUP BY branch_id;
++-----------+--------------+
+| branch_id | avg_salary   |
++-----------+--------------+
+|         1 | 40000.000000 |
+|         2 | 42000.000000 |
+|         3 | 54000.000000 |
+|         4 | 37000.000000 |
++-----------+--------------+
+4 rows in set (0.04 sec)
+
+mysql> SELECT payment_mode, COUNT(*) AS total_orders FROM orders GROUP BY payment_mode;
++--------------+--------------+
+| payment_mode | total_orders |
++--------------+--------------+
+| UPI          |            5 |
+| Card         |            3 |
+| Cash         |            2 |
++--------------+--------------+
+3 rows in set (0.00 sec)
+
+mysql>  SELECT DATE_FORMAT(order_date, '%Y-%m') AS month, COUNT(*) AS completed_orders FROM orders WHERE status = 'Completed' GROUP BY DATE_FORMAT(order_date, '%Y-%m');
++---------+------------------+
+| month   | completed_orders |
++---------+------------------+
+| 2026-01 |                1 |
+| 2026-02 |                1 |
+| 2026-03 |                1 |
+| 2026-04 |                1 |
+| 2026-05 |                1 |
+| 2026-07 |                1 |
+| 2026-08 |                1 |
++---------+------------------+
+7 rows in set (0.04 sec)
+
+mysql> SELECT product_id, SUM(quantity) AS total_qty_sold FROM order_items GROUP BY product_id;
++------------+----------------+
+| product_id | total_qty_sold |
++------------+----------------+
+|        201 |              1 |
+|        202 |              8 |
+|        203 |              3 |
+|        204 |              2 |
+|        205 |              1 |
+|        206 |              1 |
+|        207 |              4 |
+|        208 |              3 |
+|        209 |              2 |
+|        210 |              1 |
++------------+----------------+
+10 rows in set (0.04 sec)
+
+mysql> SELECT branch_id, SUM(order_total) AS total_revenue FROM orders GROUP BY branch_id;
++-----------+---------------+
+| branch_id | total_revenue |
++-----------+---------------+
+|         1 |     105400.00 |
+|         2 |      53500.00 |
+|         3 |      41800.00 |
+|         4 |      12000.00 |
++-----------+---------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT AVG(order_total) AS avg_order_value FROM orders;
++-----------------+
+| avg_order_value |
++-----------------+
+|    21270.000000 |
++-----------------+
+1 row in set (0.00 sec)
